@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Networking Final Exam — 100 Questions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; color: #1a1a1a; line-height: 1.6; }
+  .container { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { text-align: center; font-size: 1.6rem; margin-bottom: 4px; color: #111; }
+  .subtitle { text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 28px; }
+  .progress-bar { position: sticky; top: 0; z-index: 10; background: #fff; padding: 10px 16px; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .progress-fill { flex: 1; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+  .progress-fill div { height: 100%; background: #2563eb; border-radius: 4px; transition: width 0.3s; width: 0%; }
+  .progress-text { font-size: 0.85rem; color: #555; white-space: nowrap; }
+  .question { background: #fff; border: 2px solid #e5e7eb; border-radius: 8px; padding: 18px 20px; margin-bottom: 14px; transition: border-color 0.2s; }
+  .question.answered { border-color: #bbf7d0; }
+  .question.wrong { border-color: #fecaca !important; background: #fef2f2; }
+  .question.correct { border-color: #bbf7d0 !important; background: #f0fdf4; }
+  .q-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .q-num { font-weight: 700; font-size: 1rem; color: #2563eb; }
+  .q-topic { font-size: 0.75rem; color: #888; background: #f3f4f6; padding: 2px 8px; border-radius: 4px; }
+  .q-text { font-size: 0.95rem; margin-bottom: 12px; color: #1f2937; font-weight: 500; }
+  .options { display: flex; flex-direction: column; gap: 7px; }
+  .options label { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; transition: background 0.15s; font-size: 0.91rem; }
+  .options label:hover { background: #f9fafb; }
+  .options input[type="radio"] { accent-color: #2563eb; width: 16px; height: 16px; flex-shrink: 0; }
+  .options label.selected { background: #eff6ff; border-color: #93c5fd; }
+  .options label.correct-answer { background: #dcfce7; border-color: #86efac; }
+  .options label.wrong-answer { background: #fee2e2; border-color: #fca5a5; }
+  .explanation { display: none; font-size: 0.82rem; color: #555; margin-top: 8px; padding: 8px 12px; background: #f9fafb; border-radius: 4px; border-left: 3px solid #2563eb; }
+  .submit-wrap { text-align: center; margin: 30px 0; }
+  #submit-btn { padding: 14px 48px; font-size: 1.1rem; font-weight: 600; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+  #submit-btn:hover { background: #1d4ed8; }
+  #submit-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+  .result { display: none; background: #fff; border-radius: 10px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); text-align: center; margin-bottom: 20px; }
+  .result h2 { font-size: 1.4rem; margin-bottom: 8px; }
+  .score { font-size: 2.2rem; font-weight: 800; color: #2563eb; }
+  .score-pass { color: #16a34a; }
+  .score-fail { color: #dc2626; }
+  .result-detail { font-size: 0.9rem; color: #666; margin-top: 6px; }
+  .reset-wrap { text-align: center; margin-top: 8px; }
+  #reset-btn { padding: 10px 32px; font-size: 0.9rem; background: #fff; color: #2563eb; border: 2px solid #2563eb; border-radius: 6px; cursor: pointer; font-weight: 600; }
+  #reset-btn:hover { background: #eff6ff; }
+  .lo-section { margin: 32px 0 12px; padding: 8px 14px; background: #e8edf5; border-radius: 6px; font-weight: 700; font-size: 0.95rem; color: #374151; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Networking — Final Exam Practice</h1>
+<p class="subtitle">100 Multiple Choice Questions | BTEC Level 4 | Unit M/618/7393</p>
+
+<div class="progress-bar">
+  <div class="progress-fill"><div id="progress-inner"></div></div>
+  <span class="progress-text" id="progress-text">0 / 100 answered</span>
+</div>
+
+<div class="result" id="result-box">
+  <h2>Your Result</h2>
+  <div class="score" id="score-display"></div>
+  <div class="result-detail" id="result-detail"></div>
+</div>
+
+<div id="quiz-container"></div>
+
+<div class="submit-wrap"><button id="submit-btn" onclick="submitQuiz()">Submit Answers</button></div>
+<div class="reset-wrap"><button id="reset-btn" onclick="resetQuiz()">Retake All</button></div>
+</div>
+
+<script>
+// ── 100 QUESTIONS ──────────────────────────────────────────────
+const questions = [
+  // ═══════ LO1: Networking Principles & Protocols (Q1–Q25) ═══════
+  { lo:"LO1", topic:"OSI Model", q:"How many layers does the OSI reference model have?", opts:["5","6","7","8"], ans:2 },
+  { lo:"LO1", topic:"OSI Model", q:"Which layer of the OSI model is responsible for routing and logical addressing?", opts:["Data Link","Network","Transport","Session"], ans:1 },
+  { lo:"LO1", topic:"OSI Model", q:"What is the correct order of the OSI layers from bottom to top?", opts:["Physical, Data Link, Network, Transport, Session, Presentation, Application","Physical, Network, Data Link, Transport, Session, Presentation, Application","Application, Presentation, Session, Transport, Network, Data Link, Physical","Physical, Data Link, Transport, Network, Session, Presentation, Application"], ans:0 },
+  { lo:"LO1", topic:"OSI Model", q:"At which OSI layer does a switch primarily operate?", opts:["Physical (Layer 1)","Data Link (Layer 2)","Network (Layer 3)","Transport (Layer 4)"], ans:1 },
+  { lo:"LO1", topic:"OSI Model", q:"Which OSI layer handles end-to-end delivery and error recovery?", opts:["Network","Session","Transport","Presentation"], ans:2 },
+  { lo:"LO1", topic:"TCP/IP Model", q:"How many layers are in the TCP/IP model?", opts:["4","5","6","7"], ans:0 },
+  { lo:"LO1", topic:"TCP/IP Model", q:"Which TCP/IP layer maps most closely to the OSI Network layer?", opts:["Application","Transport","Internet","Network Access"], ans:2 },
+  { lo:"LO1", topic:"Protocols", q:"Which protocol provides reliable, connection-oriented data delivery?", opts:["UDP","TCP","IP","ARP"], ans:1 },
+  { lo:"LO1", topic:"Protocols", q:"DNS primarily uses which transport-layer protocol for queries?", opts:["TCP only","UDP only","Both TCP and UDP","ICMP"], ans:2 },
+  { lo:"LO1", topic:"Protocols", q:"What port number does HTTP use by default?", opts:["21","25","53","80"], ans:3 },
+  { lo:"LO1", topic:"Protocols", q:"HTTPS uses port ____ by default.", opts:["80","443","8080","8443"], ans:1 },
+  { lo:"LO1", topic:"Protocols", q:"Which protocol is used to securely transfer files over a network?", opts:["FTP","TFTP","SFTP","SMTP"], ans:2 },
+  { lo:"LO1", topic:"Protocols", q:"SMTP operates on port ____.", opts:["21","22","25","110"], ans:2 },
+  { lo:"LO1", topic:"Protocols", q:"What does ARP do?", opts:["Resolves domain names to IP addresses","Resolves IP addresses to MAC addresses","Routes packets between networks","Encrypts network traffic"], ans:1 },
+  { lo:"LO1", topic:"Network Types", q:"A network covering a city or large campus is classified as a:", opts:["LAN","MAN","WAN","PAN"], ans:1 },
+  { lo:"LO1", topic:"Network Types", q:"Which network type has the largest geographical scope?", opts:["LAN","MAN","CAN","WAN"], ans:3 },
+  { lo:"LO1", topic:"Network Types", q:"A PAN is best described as a network:", opts:["Spanning multiple cities","Within a single building","Around an individual person's workspace","Connecting two continents"], ans:2 },
+  { lo:"LO1", topic:"Topologies", q:"In which topology does each device connect to a central device?", opts:["Bus","Ring","Star","Mesh"], ans:2 },
+  { lo:"LO1", topic:"Topologies", q:"Which topology provides the highest redundancy?", opts:["Star","Bus","Ring","Full Mesh"], ans:3 },
+  { lo:"LO1", topic:"Topologies", q:"A single cable failure brings down the entire network in which topology?", opts:["Star","Mesh","Bus","Hybrid"], ans:2 },
+  { lo:"LO1", topic:"IEEE Standards", q:"IEEE 802.3 defines standards for:", opts:["Wireless LANs","Ethernet","Token Ring","Bluetooth"], ans:1 },
+  { lo:"LO1", topic:"IEEE Standards", q:"Which IEEE standard covers wireless LANs (Wi-Fi)?", opts:["IEEE 802.3","IEEE 802.11","IEEE 802.1Q","IEEE 802.1D"], ans:1 },
+  { lo:"LO1", topic:"Client-Server", q:"In a client-server network, the server:", opts:["Only stores files","Provides resources or services to clients","Acts as a backup for clients","Only routes traffic"], ans:1 },
+  { lo:"LO1", topic:"Peer-to-Peer", q:"A key characteristic of a peer-to-peer network is:", opts:["Centralized administration","Each device can act as both client and server","Requires a dedicated server OS","Higher security than client-server"], ans:1 },
+  { lo:"LO1", topic:"Trends", q:"BYOD stands for:", opts:["Bring Your Own Device","Build Your Own Database","Buy Your Own Domain","Backup Your Own Data"], ans:0 },
+
+  // ═══════ LO2: Networking Devices & Operations (Q26–Q47) ═══════
+  { lo:"LO2", topic:"Devices", q:"Which device operates at Layer 3 of the OSI model?", opts:["Hub","Switch","Router","Repeater"], ans:2 },
+  { lo:"LO2", topic:"Devices", q:"A hub operates at which OSI layer?", opts:["Layer 1 (Physical)","Layer 2 (Data Link)","Layer 3 (Network)","Layer 4 (Transport)"], ans:0 },
+  { lo:"LO2", topic:"Devices", q:"What is the primary difference between a hub and a switch?", opts:["Hubs are faster","Switches forward packets based on MAC addresses","Hubs support VLANs","Switches operate at Layer 1"], ans:1 },
+  { lo:"LO2", topic:"Devices", q:"Which device is used to connect two different network types (e.g., Ethernet to Token Ring)?", opts:["Switch","Router","Bridge","Gateway"], ans:3 },
+  { lo:"LO2", topic:"Devices", q:"A firewall primarily provides:", opts:["Bandwidth management","Network security by filtering traffic","IP address assignment","Wireless connectivity"], ans:1 },
+  { lo:"LO2", topic:"Devices", q:"What does a wireless access point (WAP) do?", opts:["Routes traffic between VLANs","Connects wireless devices to a wired network","Assigns IP addresses","Filters spam email"], ans:1 },
+  { lo:"LO2", topic:"Devices", q:"Which device regenerates and amplifies a weakened signal?", opts:["Router","Switch","Repeater","Gateway"], ans:2 },
+  { lo:"LO2", topic:"Devices", q:"A modem performs which essential function?", opts:["Routing between VLANs","Modulation and demodulation of signals","Packet filtering","MAC address learning"], ans:1 },
+  { lo:"LO2", topic:"Cisco IOS", q:"What is the default mode when you first access a Cisco router CLI?", opts:["Privileged EXEC mode","Global Configuration mode","User EXEC mode","Interface Configuration mode"], ans:2 },
+  { lo:"LO2", topic:"Cisco IOS", q:"The prompt 'Router(config-if)#' indicates you are in:", opts:["Privileged EXEC mode","Global Configuration mode","Interface Configuration mode","Line Configuration mode"], ans:2 },
+  { lo:"LO2", topic:"Cisco IOS", q:"Which command enters privileged EXEC mode?", opts:["login","enable","configure terminal","interface"], ans:1 },
+  { lo:"LO2", topic:"Cisco IOS", q:"To save the running configuration to NVRAM, use:", opts:["copy run start","save config","write memory","Both copy run start and write memory"], ans:3 },
+  { lo:"LO2", topic:"Servers", q:"A DHCP server provides:", opts:["File storage","Automatic IP address assignment","Email services","Web hosting"], ans:1 },
+  { lo:"LO2", topic:"Servers", q:"Which type of server resolves domain names to IP addresses?", opts:["DHCP server","FTP server","DNS server","Web server"], ans:2 },
+  { lo:"LO2", topic:"Media", q:"Fiber optic cable transmits data using:", opts:["Electrical signals","Radio waves","Light pulses","Magnetic fields"], ans:2 },
+  { lo:"LO2", topic:"Media", q:"Which cable type is immune to electromagnetic interference (EMI)?", opts:["UTP","STP","Coaxial","Fiber optic"], ans:3 },
+  { lo:"LO2", topic:"Media", q:"RJ-45 connectors are used with:", opts:["Coaxial cable","Fiber optic cable","Twisted-pair cable","Serial cable"], ans:2 },
+  { lo:"LO2", topic:"Media", q:"Single-mode fiber has a core diameter of approximately:", opts:["50–62.5 microns","8–10 microns","100–125 microns","1–2 microns"], ans:1 },
+  { lo:"LO2", topic:"Architecture", q:"The system bus connects:", opts:["Two routers","CPU, memory, and I/O devices","LAN and WAN","Client and server"], ans:1 },
+  { lo:"LO2", topic:"Permissions", q:"In Windows networking, NTFS permissions apply:", opts:["Only to network users","To both local and network users","Only to local console users","Only to domain controllers"], ans:1 },
+  { lo:"LO2", topic:"Virtualisation", q:"A hypervisor enables:", opts:["Network routing","Running multiple virtual machines on one physical host","DNS resolution","Packet encryption"], ans:1 },
+  { lo:"LO2", topic:"Cloud", q:"IaaS stands for:", opts:["Internet as a Service","Infrastructure as a Service","Integration as a Service","Information as a Service"], ans:1 },
+
+  // ═══════ LO3: Network Design, IP Addressing, Subnetting (Q48–Q75) ═══════
+  { lo:"LO3", topic:"IPv4 Addressing", q:"How many bits are in an IPv4 address?", opts:["16","24","32","64"], ans:2 },
+  { lo:"LO3", topic:"IPv4 Addressing", q:"Which is a valid Class C private IP address?", opts:["10.0.0.1","172.16.0.1","192.168.1.1","224.0.0.1"], ans:2 },
+  { lo:"LO3", topic:"IPv4 Addressing", q:"The subnet mask 255.255.255.0 in CIDR notation is:", opts:["/8","/16","/24","/32"], ans:2 },
+  { lo:"LO3", topic:"IPv4 Addressing", q:"What is the network address for 192.168.10.55/24?", opts:["192.168.10.0","192.168.10.1","192.168.10.55","192.168.10.255"], ans:0 },
+  { lo:"LO3", topic:"IPv4 Addressing", q:"The broadcast address for subnet 192.168.5.0/24 is:", opts:["192.168.5.0","192.168.5.1","192.168.5.254","192.168.5.255"], ans:3 },
+  { lo:"LO3", topic:"IPv4 Addressing", q:"Class A private address range is:", opts:["172.16.0.0 – 172.31.255.255","192.168.0.0 – 192.168.255.255","10.0.0.0 – 10.255.255.255","169.254.0.0 – 169.254.255.255"], ans:2 },
+  { lo:"LO3", topic:"IPv4 Addressing", q:"APIPA addresses fall in the range:", opts:["10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","169.254.0.0/16"], ans:3 },
+  { lo:"LO3", topic:"Subnetting", q:"A /26 subnet mask provides how many usable host addresses?", opts:["30","62","126","254"], ans:1 },
+  { lo:"LO3", topic:"Subnetting", q:"How many subnets does borrowing 3 bits from a Class C network create?", opts:["3","6","8","16"], ans:2 },
+  { lo:"LO3", topic:"Subnetting", q:"VLSM stands for:", opts:["Very Large Subnet Mask","Variable Length Subnet Mask","Virtual LAN Subnet Mask","Verified Link State Method"], ans:1 },
+  { lo:"LO3", topic:"IPv6", q:"How many bits are in an IPv6 address?", opts:["32","64","128","256"], ans:2 },
+  { lo:"LO3", topic:"IPv6", q:"IPv6 addresses are written in:", opts:["Decimal notation","Hexadecimal notation","Binary notation","Octal notation"], ans:1 },
+  { lo:"LO3", topic:"DHCP", q:"The DHCP process follows which order?", opts:["Offer, Discover, Request, Acknowledge","Discover, Offer, Request, Acknowledge","Request, Offer, Discover, Acknowledge","Discover, Request, Offer, Acknowledge"], ans:1 },
+  { lo:"LO3", topic:"DHCP", q:"DHCP uses which transport-layer ports?", opts:["TCP 67 and 68","UDP 67 and 68","TCP 53 and 54","UDP 20 and 21"], ans:1 },
+  { lo:"LO3", topic:"Routing", q:"RIP (Routing Information Protocol) uses which metric?", opts:["Bandwidth","Delay","Hop count","Reliability"], ans:2 },
+  { lo:"LO3", topic:"Routing", q:"What is the maximum hop count for RIP?", opts:["7","15","16","255"], ans:1 },
+  { lo:"LO3", topic:"Routing", q:"OSPF uses which algorithm?", opts:["Bellman-Ford","Dijkstra's Shortest Path First","Distance Vector","Spanning Tree"], ans:1 },
+  { lo:"LO3", topic:"Routing", q:"Which routing protocol is classified as a link-state protocol?", opts:["RIP v1","RIP v2","OSPF","BGP"], ans:2 },
+  { lo:"LO3", topic:"Routing", q:"The administrative distance of a directly connected route is:", opts:["0","1","90","110"], ans:0 },
+  { lo:"LO3", topic:"Bandwidth", q:"Bandwidth is best defined as:", opts:["Actual data transferred","Theoretical maximum data transfer capacity","Round-trip time","Number of hops"], ans:1 },
+  { lo:"LO3", topic:"QoS", q:"QoS stands for:", opts:["Quantity of Service","Quality of Service","Queue of Signals","Query of Systems"], ans:1 },
+  { lo:"LO3", topic:"Cabling", q:"A straight-through cable connects:", opts:["PC to PC","Switch to switch","PC to switch","Router to router"], ans:2 },
+  { lo:"LO3", topic:"Cabling", q:"A crossover cable is used to connect:", opts:["PC to switch","PC to router console","Two like devices (e.g., switch to switch)","Router to modem"], ans:2 },
+  { lo:"LO3", topic:"Cabling", q:"TIA/EIA 568A and 568B are standards for:", opts:["Fiber optic connectors","Coaxial termination","RJ-45 pinout wiring","Serial cable pinouts"], ans:2 },
+  { lo:"LO3", topic:"Cabling", q:"Cat 6 cable supports speeds up to:", opts:["100 Mbps","1 Gbps","10 Gbps","100 Gbps"], ans:2 },
+  { lo:"LO3", topic:"Scalability", q:"A scalable network design means:", opts:["Using only one vendor","Ability to grow without major redesign","Lowest cost possible","Wireless only"], ans:1 },
+  { lo:"LO3", topic:"PoE", q:"IEEE 802.3af PoE provides up to:", opts:["7.5 watts","15.4 watts","25.5 watts","60 watts"], ans:1 },
+  { lo:"LO3", topic:"NAT", q:"NAT is primarily used to:", opts:["Encrypt traffic","Translate private IP addresses to public IP addresses","Filter packets","Assign IP addresses dynamically"], ans:1 },
+
+  // ═══════ LO4: Implementation, Configuration, Troubleshooting (Q76–Q100) ═══════
+  { lo:"LO4", topic:"Commands", q:"Which command tests reachability to a remote host?", opts:["tracert","ping","nslookup","netstat"], ans:1 },
+  { lo:"LO4", topic:"Commands", q:"The tracert (traceroute) command shows:", opts:["MAC addresses","The path packets take to a destination","Open ports","DNS records"], ans:1 },
+  { lo:"LO4", topic:"Commands", q:"ipconfig /all displays:", opts:["Only the IP address","Detailed TCP/IP configuration for all adapters","Routing table","ARP cache"], ans:1 },
+  { lo:"LO4", topic:"Commands", q:"Which command displays the MAC address table on a Cisco switch?", opts:["show ip route","show mac address-table","show arp","show interfaces"], ans:1 },
+  { lo:"LO4", topic:"Commands", q:"show ip route displays:", opts:["MAC address table","The routing table","Running configuration","Interface status"], ans:1 },
+  { lo:"LO4", topic:"VLANs", q:"VLANs are used to:", opts:["Increase bandwidth","Segment a network logically at Layer 2","Replace routers","Encrypt data"], ans:1 },
+  { lo:"LO4", topic:"VLANs", q:"IEEE ____ defines the VLAN trunking standard.", opts:["802.3","802.11","802.1Q","802.1D"], ans:2 },
+  { lo:"LO4", topic:"VLANs", q:"A trunk port carries traffic for:", opts:["One VLAN","Multiple VLANs","Only the native VLAN","Only management traffic"], ans:1 },
+  { lo:"LO4", topic:"Inter-VLAN", q:"Router-on-a-stick is used for:", opts:["Connecting two switches","Inter-VLAN routing","DHCP configuration","Firewall setup"], ans:1 },
+  { lo:"LO4", topic:"Remote Access", q:"Which protocol provides secure remote CLI access?", opts:["Telnet","SSH","HTTP","FTP"], ans:1 },
+  { lo:"LO4", topic:"Remote Access", q:"Telnet transmits data including passwords:", opts:["Encrypted","In plain text","Compressed","Hashed"], ans:1 },
+  { lo:"LO4", topic:"Routing Config", q:"On a Cisco router, 'network 192.168.1.0' under RIP configuration:", opts:["Assigns that IP to an interface","Advertises that network via RIP","Sets the router's hostname","Creates a VLAN"], ans:1 },
+  { lo:"LO4", topic:"Routing Config", q:"The command 'router rip' enters:", opts:["Interface configuration mode","Global configuration mode","Router configuration mode","User EXEC mode"], ans:2 },
+  { lo:"LO4", topic:"Troubleshooting", q:"If you can ping an IP but not a hostname, the issue is likely:", opts:["Physical cable fault","DNS resolution","DHCP failure","Switch failure"], ans:1 },
+  { lo:"LO4", topic:"Troubleshooting", q:"A 169.254.x.x address indicates:", opts:["Static IP configured","DHCP server failure (APIPA assigned)","DNS server address","Gateway address"], ans:1 },
+  { lo:"LO4", topic:"Troubleshooting", q:"'Request timed out' from ping usually means:", opts:["DNS failure","No route to host or host unreachable","VLAN misconfiguration","Switch loop"], ans:1 },
+  { lo:"LO4", topic:"Security", q:"Which type of attack floods a server with traffic to make it unavailable?", opts:["Phishing","Man-in-the-middle","DoS / DDoS","SQL injection"], ans:2 },
+  { lo:"LO4", topic:"Security", q:"A VLAN hopping attack exploits:", opts:["Weak passwords","Switch trunk port misconfiguration","Router ACLs","Firewall rules"], ans:1 },
+  { lo:"LO4", topic:"Security", q:"Which wireless security protocol is considered the strongest?", opts:["WEP","WPA","WPA2","WPA3"], ans:3 },
+  { lo:"LO4", topic:"Maintenance", q:"A regular network backup schedule is part of:", opts:["Network design","Network maintenance planning","DHCP configuration","VLAN setup"], ans:1 },
+  { lo:"LO4", topic:"Monitoring", q:"SNMP stands for:", opts:["Simple Network Mail Protocol","Simple Network Management Protocol","Secure Network Monitoring Protocol","System Network Mapping Protocol"], ans:1 },
+  { lo:"LO4", topic:"ACL", q:"An Access Control List (ACL) on a router is used to:", opts:["Assign IP addresses","Filter packets based on defined rules","Configure VLANs","Enable OSPF"], ans:1 },
+  { lo:"LO4", topic:"Spanning Tree", q:"STP (Spanning Tree Protocol) prevents:", opts:["IP address conflicts","Switching loops in a redundant network","DNS spoofing","DHCP starvation"], ans:1 },
+  { lo:"LO4", topic:"EtherChannel", q:"EtherChannel provides:", opts:["Wireless connectivity","Link aggregation for increased bandwidth and redundancy","VLAN routing","Firewall filtering"], ans:1 },
+  { lo:"LO4", topic:"Final", q:"The first step in the network troubleshooting methodology is:", opts:["Test the theory","Identify the problem","Implement the solution","Document findings"], ans:1 }
+];
+
+// ── BUILD QUIZ ──────────────────────────────────────────────────
+const container = document.getElementById('quiz-container');
+let currentLO = '';
+
+questions.forEach((q, i) => {
+  if (q.lo !== currentLO) {
+    currentLO = q.lo;
+    const titles = {
+      'LO1': 'LO1: Networking Principles & Protocols',
+      'LO2': 'LO2: Networking Devices & Operations',
+      'LO3': 'LO3: Designing Efficient Networked Systems',
+      'LO4': 'LO4: Implement & Diagnose Networked Systems'
+    };
+    const div = document.createElement('div');
+    div.className = 'lo-section';
+    div.textContent = titles[currentLO] || currentLO;
+    container.appendChild(div);
+  }
+
+  const qDiv = document.createElement('div');
+  qDiv.className = 'question';
+  qDiv.id = 'q' + i;
+
+  let html = '<div class="q-header"><span class="q-num">Q' + (i+1) + '</span><span class="q-topic">' + q.topic + '</span></div>';
+  html += '<div class="q-text">' + q.q + '</div>';
+  html += '<div class="options">';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt, j) => {
+    html += '<label id="lbl_' + i + '_' + j + '"><input type="radio" name="q' + i + '" value="' + j + '" onchange="markAnswered(' + i + ',' + j + ')"> <span>' + letters[j] + ') ' + opt + '</span></label>';
+  });
+  html += '</div>';
+  html += '<div class="explanation" id="exp_' + i + '"></div>';
+  qDiv.innerHTML = html;
+  container.appendChild(qDiv);
+});
+
+function markAnswered(qIdx, optIdx) {
+  const qDiv = document.getElementById('q' + qIdx);
+  qDiv.classList.add('answered');
+  // Remove old selection styling
+  qDiv.querySelectorAll('label').forEach(l => l.classList.remove('selected'));
+  document.getElementById('lbl_' + qIdx + '_' + optIdx).classList.add('selected');
+  updateProgress();
+}
+
+function updateProgress() {
+  let count = 0;
+  for (let i = 0; i < questions.length; i++) {
+    const selected = document.querySelector('input[name="q' + i + '"]:checked');
+    if (selected) count++;
+  }
+  document.getElementById('progress-text').textContent = count + ' / 100 answered';
+  document.getElementById('progress-inner').style.width = count + '%';
+}
+
+function submitQuiz() {
+  let correct = 0;
+  let wrong = 0;
+  let unanswered = 0;
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  for (let i = 0; i < questions.length; i++) {
+    const qDiv = document.getElementById('q' + i);
+    const selected = document.querySelector('input[name="q' + i + '"]:checked');
+    const expDiv = document.getElementById('exp_' + i);
+
+    if (!selected) {
+      unanswered++;
+      qDiv.classList.add('wrong');
+      expDiv.style.display = 'block';
+      expDiv.innerHTML = '✗ <strong>Unanswered.</strong> Correct: <strong>' + ['A','B','C','D'][questions[i].ans] + ') ' + questions[i].opts[questions[i].ans] + '</strong>';
+      // Highlight correct answer
+      document.getElementById('lbl_' + i + '_' + questions[i].ans).classList.add('correct-answer');
+      continue;
+    }
+
+    const chosen = parseInt(selected.value);
+
+    if (chosen === questions[i].ans) {
+      correct++;
+      qDiv.classList.add('correct');
+      qDiv.classList.remove('wrong');
+      document.getElementById('lbl_' + i + '_' + chosen).classList.add('correct-answer');
+      expDiv.style.display = 'block';
+      expDiv.innerHTML = '✓ Correct!';
+    } else {
+      wrong++;
+      qDiv.classList.add('wrong');
+      qDiv.classList.remove('correct');
+      document.getElementById('lbl_' + i + '_' + chosen).classList.add('wrong-answer');
+      document.getElementById('lbl_' + i + '_' + questions[i].ans).classList.add('correct-answer');
+      expDiv.style.display = 'block';
+      expDiv.innerHTML = '✗ <strong>Wrong.</strong> You chose ' + ['A','B','C','D'][chosen] + '. Correct: <strong>' + ['A','B','C','D'][questions[i].ans] + ') ' + questions[i].opts[questions[i].ans] + '</strong>';
+    }
+  }
+
+  // Disable all radios
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+  document.getElementById('submit-btn').disabled = true;
+
+  // Show result
+  const total = questions.length;
+  const score = Math.round((correct / total) * 100);
+  const resultBox = document.getElementById('result-box');
+  const scoreDisplay = document.getElementById('score-display');
+  const resultDetail = document.getElementById('result-detail');
+
+  scoreDisplay.textContent = correct + ' / ' + total + '  (' + score + '%)';
+  scoreDisplay.className = 'score ' + (score >= 50 ? 'score-pass' : 'score-fail');
+
+  let detail = 'Correct: ' + correct + '  |  Wrong: ' + wrong + '  |  Unanswered: ' + unanswered;
+  if (score >= 70) detail += '\nExcellent — strong understanding of networking concepts.';
+  else if (score >= 50) detail += '\nPass — review the red-highlighted questions and retake.';
+  else detail += '\nNeeds improvement — focus on the red-highlighted areas and retake.';
+
+  resultDetail.textContent = detail;
+  resultBox.style.display = 'block';
+  updateProgress();
+}
+
+function resetQuiz() {
+  document.querySelectorAll('input[type="radio"]').forEach(r => { r.disabled = false; r.checked = false; });
+  document.querySelectorAll('.question').forEach(q => { q.classList.remove('wrong','correct','answered'); });
+  document.querySelectorAll('.options label').forEach(l => { l.classList.remove('selected','correct-answer','wrong-answer'); });
+  document.querySelectorAll('.explanation').forEach(e => { e.style.display = 'none'; e.innerHTML = ''; });
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('result-box').style.display = 'none';
+  document.getElementById('progress-text').textContent = '0 / 100 answered';
+  document.getElementById('progress-inner').style.width = '0%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Keyboard navigation: 1-4 to select option after focusing a question
+document.addEventListener('keydown', function(e) {
+  if (e.key >= '1' && e.key <= '4') {
+    const focused = document.activeElement;
+    if (focused && focused.closest('.question')) {
+      const qDiv = focused.closest('.question');
+      const inputs = qDiv.querySelectorAll('input[type="radio"]');
+      if (inputs.length >= parseInt(e.key) && !inputs[0].disabled) {
+        inputs[parseInt(e.key)-1].checked = true;
+        const qIdx = parseInt(qDiv.id.substring(1));
+        markAnswered(qIdx, parseInt(e.key)-1);
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
